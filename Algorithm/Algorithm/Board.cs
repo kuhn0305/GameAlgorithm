@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace Algorithm
 {
+    #region List 직접구현
     class MyList<T>
     {
         const int DEFAULT_SIZE = 1;
@@ -51,7 +53,9 @@ namespace Algorithm
         }
 
     }
-    
+    #endregion
+
+    #region LinkedList 직접구현
     class MyLinkedListNode<T>
     {
         public T Data;
@@ -72,10 +76,10 @@ namespace Algorithm
 
             newRoom.Data = data;
 
-            if(head == null)
+            if (head == null)
                 head = newRoom;
 
-            if(tail != null)
+            if (tail != null)
             {
                 tail.Next = newRoom;
                 newRoom.Prev = tail;
@@ -96,31 +100,75 @@ namespace Algorithm
             if (tail == room)
                 tail = tail.Prev;
 
-            if(room.Prev != null)
+            if (room.Prev != null)
                 room.Prev.Next = room.Next;
-            
-            if(room.Next != null)
+
+            if (room.Next != null)
                 room.Next.Prev = room.Prev;
 
             count--;
         }
     }
+    #endregion
+
 
     internal class Board
     {
-        public int[] _data = new int[25];   // 배열
-        public MyList<int> _data2 = new MyList<int>();  // 동적배열
-        public MyLinkedList<int> _data3 = new MyLinkedList<int>(); // 연결리스트
+        const char CIRCLE = '\u25cf';
+        public TileType[,] _tile;
+        public int _size;
 
-        public void Initialize()
+        public enum TileType
         {
-            _data3.AddLast(101);
-            _data3.AddLast(102);
-            MyLinkedListNode<int> node = _data3.AddLast(103);
-            _data3.AddLast(104);
-            _data3.AddLast(105);
+            Empty,
+            Wall
+        }
 
-            _data3.Remove(node);
+        public void Initialize(int size)
+        {
+            _tile = new TileType[size, size];
+            _size = size;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1)
+                        _tile[y, x] = TileType.Wall;
+                    else
+                        _tile[y, x] = TileType.Empty;
+                }
+            }
+        }
+
+        public void Render()
+        {
+            ConsoleColor prevColor = Console.ForegroundColor;
+
+            for (int y = 0; y < _size; y++)
+            {
+                for (int x = 0; x < _size; x++)
+                {
+                    Console.ForegroundColor = GetTileColor(_tile[y, x]); ;
+                    Console.Write(CIRCLE);
+                }
+                Console.WriteLine();
+            }
+
+            Console.ForegroundColor = prevColor;
+        }
+
+        private ConsoleColor GetTileColor(TileType type)
+        {
+            switch (type)
+            {
+                case TileType.Empty:
+                    return ConsoleColor.Green;
+                case TileType.Wall:
+                    return ConsoleColor.Red;
+                default:
+                    return ConsoleColor.Green;
+            }
         }
     }
 }
