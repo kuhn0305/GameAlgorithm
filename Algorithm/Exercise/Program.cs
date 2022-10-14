@@ -12,7 +12,7 @@ namespace Exercise
         {
             Graph graph = new Graph();
 
-            graph.SearchAll();
+            graph.BFS(0);
 
         }
 
@@ -74,7 +74,7 @@ namespace Exercise
 
             }
 
-            public void SearchAll()
+            public void DFS_SearchAll()
             {
                 visited = new bool[adj.GetLength(0)];
 
@@ -82,6 +82,39 @@ namespace Exercise
                 {
                     if (visited[0] == false)
                         DFS_Array(0);
+                }
+            }
+
+            public void BFS(int start)
+            {
+                Queue<int> vertexQueue = new Queue<int>();
+                bool[] found = new bool[adj.GetLength(0)];
+                int[] distance = new int[adj.GetLength(0)];
+
+                vertexQueue.Enqueue(start);
+                found[start] = true;
+                distance[start] = 0;
+
+                int current = 0;
+
+                while (vertexQueue.Count > 0)
+                {
+                    current = vertexQueue.Dequeue();
+
+                    Console.WriteLine($"{current} :: {distance[current]}");
+
+                    for (int next = 0; next < adj.GetLength(0); next++)
+                    {
+                        if (adj[current, next] == 0)
+                            continue;
+
+                        if (found[next] == true)
+                            continue;
+
+                        vertexQueue.Enqueue(next);
+                        found[next] = true;
+                        distance[next] = distance[current] + 1;
+                    }
                 }
             }
         }
