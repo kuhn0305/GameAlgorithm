@@ -11,7 +11,7 @@ namespace Algorithm
         public int Y;
         public int X;
 
-        public Pos(int y, int x )
+        public Pos(int y, int x)
         {
             Y = y;
             X = x;
@@ -43,13 +43,14 @@ namespace Algorithm
             PosX = posX;
             _board = board;
 
+            //RightHand();
             BFS();
         }
 
         private void BFS()
         {
-            int[] deltaY = new int[4] { -1, 0, 1, 0};
-            int[] deltaX = new int[4] { 0, 1, 0, -1};
+            int[] deltaY = new int[] { -1, 0, 1, 0 };
+            int[] deltaX = new int[] { 0, -1, 0, 1 };
 
             bool[,] found = new bool[_board.Size, _board.Size];
             Pos[,] parent = new Pos[_board.Size, _board.Size];
@@ -59,13 +60,14 @@ namespace Algorithm
             found[PosY, PosX] = true;
             parent[PosY, PosX] = new Pos(PosY, PosX);
 
-            while(q.Count > 0)
+            while (q.Count > 0)
             {
+
                 Pos pos = q.Dequeue();
                 int nowY = pos.Y;
                 int nowX = pos.X;
 
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     int nextY = nowY + deltaY[i];
                     int nextX = nowX + deltaX[i];
@@ -73,7 +75,7 @@ namespace Algorithm
                     if (nextX < 0 || nextX >= _board.Size || nextY < 0 || nextY >= _board.Size)
                         continue;
 
-                    if (_board.Tile[nextX, nextY] == Board.TileType.Wall)
+                    if (_board.Tile[nextY, nextX] == Board.TileType.Wall)
                         continue;
 
                     if (found[nextY, nextX])
@@ -81,19 +83,19 @@ namespace Algorithm
 
                     q.Enqueue(new Pos(nextY, nextX));
                     found[nextY, nextX] = true;
-                    parent[nextY, nextX] = new Pos(nextY, nextX);
+                    parent[nextY, nextX] = new Pos(nowY, nowX);
                 }
             }
 
             int y = _board.DestY;
             int x = _board.DestX;
 
-            while (parent[y,x].Y != y || parent[y,x].X != x )
+            while (parent[y, x].Y != y || parent[y, x].X != x)
             {
                 _points.Add(new Pos(y, x));
                 Pos pos = parent[y, x];
-                y = PosY;
-                x = PosX;
+                y = pos.Y;
+                x = pos.X;
             }
 
             _points.Add(new Pos(y, x));
@@ -148,6 +150,7 @@ namespace Algorithm
 
         public void Update(int deltaTick)
         {
+
             if (_lastIndex >= _points.Count)
                 return;
 
