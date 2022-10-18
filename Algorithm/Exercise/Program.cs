@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Net.Mime;
 using System.Numerics;
 
 namespace Exercise
@@ -12,7 +13,7 @@ namespace Exercise
         {
             Graph graph = new Graph();
 
-            graph.Dijikstra(0);
+            graph.Dijikstra2(0);
 
         }
 
@@ -191,6 +192,110 @@ namespace Exercise
                             parent[next] = now;
                         }
                     
+                    }
+                }
+            }
+
+            public void Dijikstra1(int start)
+            {
+                bool[] visited = new bool[weightAdj.GetLength(0)];
+                int[] distance = new int[weightAdj.GetLength(0)];
+                int[] parent = new int[weightAdj.GetLength(0)];
+
+                Array.Fill(distance, Int32.MaxValue);
+
+                distance[start] = 0;
+                parent[start] = start;
+
+                while(true)
+                {
+                    int closest = Int32.MaxValue;
+                    int now = -1;
+
+                    for(int i =0; i < weightAdj.GetLength(0); i++)
+                    {
+                        // 발견되지 않았거나... 기존의 최단거리보다 멀면 pass
+                        if (distance[i] == Int32.MaxValue || distance[i] >= closest)
+                            continue;
+
+                        if (visited[i])
+                            continue;
+
+                        closest = distance[i];
+                        now = i;
+                    }
+
+                    if (now == -1)
+                        return;
+
+                    visited[now] = true;
+
+
+                    for(int next = 0; next < weightAdj.GetLength(0); next++)
+                    {
+                        if (weightAdj[now, next] == -1)
+                            continue;
+
+                        if (visited[next])
+                            continue;
+
+                        int nextDist = distance[now] + weightAdj[now, next];
+
+                        if(nextDist < distance[next])
+                        {
+                            distance[next] = nextDist;
+                            parent[next] = now;
+                        }
+                    }
+                }
+            }
+
+            public void Dijikstra2(int start)
+            {
+                bool[] visited = new bool[weightAdj.GetLength(0)];
+                int[] distance = new int[weightAdj.GetLength(0)];
+                int[] parent = new int[weightAdj.GetLength(0)];
+
+                Array.Fill(distance, Int32.MaxValue);
+
+                distance[start] = 0;
+                parent[start] = start;
+
+                while(true)
+                {
+                    int closest = Int32.MaxValue;
+                    int now = -1;
+
+                    for(int v = 0; v < weightAdj.GetLength(0); v++)
+                    {
+                        if (visited[v])
+                            continue;
+                        if (distance[v] == Int32.MaxValue || distance[v] >= closest)
+                            continue;
+
+                        now = v;
+                        closest = distance[v];
+                    }
+
+                    if (now == -1)
+                        return;
+
+                    visited[now] = true;
+
+                    for (int next = 0; next < weightAdj.GetLength(0); next++)
+                    {
+                        if (visited[next])
+                            continue;
+                        if (weightAdj[now, next] == -1)
+                            continue;
+
+                        int nextDist = distance[now] + weightAdj[now, next];
+
+                        if(nextDist < distance[next] )
+                        {
+                            distance[next] = nextDist;
+                            parent[next] = now;
+                        }
                     }
                 }
             }
