@@ -44,7 +44,7 @@ namespace Algorithm
             _board = board;
 
             //RightHand();
-            BFS();
+            BFS1();
         }
 
         private void BFS()
@@ -102,6 +102,119 @@ namespace Algorithm
             _points.Reverse();
         }
 
+        private void BFS1()
+        {
+            int[] deltaY = new int[] { -1, 0, 1, 0 };
+            int[] deltaX = new int[] { 0, -1, 0, 1 };
+
+            Queue<Pos> queue = new Queue<Pos>();
+            bool[,] found = new bool[_board.Size, _board.Size];
+            Pos[,] parent = new Pos[_board.Size, _board.Size];
+
+            queue.Enqueue(new Pos(PosY, PosX));
+            found[PosY, PosX] = true;
+            parent[PosY, PosX] = new Pos(PosY, PosX);
+
+            while (queue.Count > 0)
+            {
+                Pos now = queue.Dequeue();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int nextY = now.Y + deltaY[i];
+                    int nextX = now.X + deltaX[i];
+
+                    if (nextY < 0 || nextY >= _board.Size || nextX < 0 || nextX >= _board.Size)
+                        continue;
+
+                    if (_board.Tile[nextY, nextX] == Board.TileType.Wall)
+                        continue;
+
+                    if (found[nextY, nextX])
+                        continue;
+
+                    queue.Enqueue(new Pos(nextY, nextX));
+                    found[nextY, nextX] = true;
+                    parent[nextY, nextX] = new Pos(now.Y, now.X);
+                }
+            }
+
+            int y = _board.DestY;
+            int x = _board.DestX;
+
+            while (parent[y, x].Y != y || parent[y, x].X != x)
+            {
+                _points.Add(new Pos(y, x));
+
+                Pos pos = parent[y, x];
+
+                y = pos.Y;
+                x = pos.X;
+            }
+
+            _points.Add(new Pos(y, x));
+            _points.Reverse();
+
+        }
+
+        private void BFS2()
+        {
+            int[] deltaY = new int[4] { -1, 0, 1, 0 };
+            int[] deltaX = new int[4] { 0, -1, 0, 1 };
+
+            Queue<Pos> queue = new Queue<Pos>();
+            bool[,] found = new bool[_board.Size, _board.Size];
+            Pos[,] parent = new Pos[_board.Size, _board.Size];
+
+
+            queue.Enqueue(new Pos(PosY, PosX));
+            found[PosY, PosX] = true;
+            parent[PosY, PosX] = new Pos(PosY, PosX);
+
+            while (queue.Count > 0)
+            {
+                Pos now = queue.Dequeue();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int nextY = now.Y + deltaY[i];
+                    int nextX = now.X + deltaX[i];
+
+                    if (nextY < 0 || nextY >= _board.Size || nextX < 0 || nextY >= _board.Size)
+                        continue;
+                    if (_board.Tile[nextY, nextX] == Board.TileType.Wall)
+                        continue;
+                    if (found[nextY, nextX])
+                        continue;
+
+                    queue.Enqueue(new Pos(nextY, nextX));
+                    found[nextY, nextX] = true;
+                    parent[nextY, nextX] = new Pos(now.Y, now.X);
+                }
+            }
+
+            int y = _board.DestY;
+            int x = _board.DestX;
+
+            List<int> distance = new List<int>();
+            distance.Add(0);
+
+            while (parent[y, x].Y != y || parent[y, x].X != x)
+            {
+                _points.Add(new Pos(y, x));
+
+                Pos pos = parent[y, x];
+
+                y = pos.Y;
+                x = pos.X;
+
+                distance.Add(distance.Last() + 1);
+            }
+            _points.Add(new Pos(y, x));
+            _points.Reverse();
+
+        }
+
         private void RightHand()
         {
             int[] frontY = new int[] { -1, 0, 1, 0 };
@@ -150,7 +263,6 @@ namespace Algorithm
 
         public void Update(int deltaTick)
         {
-
             if (_lastIndex >= _points.Count)
                 return;
 
