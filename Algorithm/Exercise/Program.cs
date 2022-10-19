@@ -11,24 +11,38 @@ namespace Exercise
 
         static void Main(string[] args)
         {
-            PriorityQueue q = new PriorityQueue();
-            q.Push(20);
-            q.Push(10);
-            q.Push(30);
-            q.Push(90);
-            q.Push(40);
+            PriorityQueue<Knight> q = new PriorityQueue<Knight>();
+            q.Push(new Knight() { Id = 20});
+            q.Push(new Knight() { Id = 10});
+            q.Push(new Knight() { Id = 30});
+            q.Push(new Knight() { Id = 90});
+            q.Push(new Knight() { Id = 40});
 
             while(q.Count() >0)
             {
-                Console.WriteLine(q.Pop());
+                Console.WriteLine(q.Pop().Id);
             }
         }
 
-        class PriorityQueue
+        class Knight : IComparable<Knight>
         {
-            List<int> _heap = new List<int>();
+            public int Id { get; set; }
 
-            public void Push(int data)
+            public int CompareTo(Knight other)
+            {
+                if(Id == other.Id)
+                    return 0;
+                return Id > other.Id ? 1 : -1;
+            }
+        }
+
+        class PriorityQueue<T> where T : IComparable<T>
+        {
+            List<T> _heap = new List<T>();
+
+
+            // O(logN)
+            public void Push(T data)
             {
                 // 힙의 맨 끝에 새로운 데이터를 삽입한다.
                 _heap.Add(data);
@@ -42,11 +56,11 @@ namespace Exercise
                     int next = (now - 1) / 2;
 
                     // 부모노드의 값이 나보다 크면 break
-                    if (_heap[next] > _heap[now])
+                    if (_heap[now].CompareTo(_heap[next]) < 0)
                         break;
 
                     // 내가 부모노드보다 값이 크거나 같으면 교체한다.
-                    int temp = _heap[next];
+                    T temp = _heap[next];
                     _heap[next] = _heap[now];
                     _heap[now] = temp;
 
@@ -55,10 +69,11 @@ namespace Exercise
                 }
             }
 
-            public int Pop()
+            // log(N)
+            public T Pop()
             {
                 // 가장 큰 값 Root (index : 0) 을 반환한다.
-                int ret = _heap[0];
+                T ret = _heap[0];
 
                 int lastIndex = _heap.Count - 1;
                 // 마지막 데이터를 루트로 이동한다
@@ -74,16 +89,16 @@ namespace Exercise
                     int right = (now * 2) + 2;
                     int next = now;
 
-                    if (left <= _heap.Count - 1 && _heap[left] > _heap[next])
+                    if (left <= _heap.Count - 1 && _heap[left].CompareTo(_heap[next]) > 0)
                         next = left;
-                    if (right <= _heap.Count - 1 && _heap[right] > _heap[next])
+                    if (right <= _heap.Count - 1 && _heap[right].CompareTo(_heap[next]) >0)
                         next = right;
 
                     // 왼쪽 & 오른쪽 모두 현재값보다 작으면 종료
                     if (next == now)
                         break;
 
-                    int temp = _heap[now];
+                    T temp = _heap[now];
                     _heap[now] = _heap[next];
                     _heap[next] = temp;
 
