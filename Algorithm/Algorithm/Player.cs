@@ -65,10 +65,10 @@ namespace Algorithm
 
         private void AStar()
         {
-            // U L D R UL DL DR DR
-            int[] deltaY = new int[] { -1, 0, 1, 0, -1, 1, 1, -1 };
-            int[] deltaX = new int[] { 0, -1, 0, 1, -1, -1, 1, 1 };
-            int[] cost = new int[] { 10, 10, 10, 10, 14, 14, 14, 14 };
+            // U L D R
+            int[] deltaY = new int[] { -1, 0, 1, 0};
+            int[] deltaX = new int[] { 0, -1, 0, 1};
+            int[] cost = new int[] { 10, 10, 10, 10};
 
             // 점수 매기기
             // F = G + H
@@ -250,14 +250,19 @@ namespace Algorithm
             }
         }
 
-        const int MOVE_TICK = 100;
+        const int MOVE_TICK = 30;
         int _sumTick = 0;
         int _lastIndex = 0;
 
         public void Update(int deltaTick)
         {
             if (_lastIndex >= _points.Count)
-                return;
+            {
+                _lastIndex = 0;
+                _points.Clear();
+                _board.Initialize(_board.Size, this);
+                Initialize(1,1, _board);
+            }
 
             _sumTick += deltaTick;
 
