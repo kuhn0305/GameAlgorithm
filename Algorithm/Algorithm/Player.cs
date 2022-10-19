@@ -65,9 +65,10 @@ namespace Algorithm
 
         private void AStar()
         {
-            int[] deltaY = new int[] { -1, 0, 1, 0 };
-            int[] deltaX = new int[] { 0, -1, 0, 1 };
-            int[] cost = new int[] { 1, 1, 1, 1 };
+            // U L D R UL DL DR DR
+            int[] deltaY = new int[] { -1, 0, 1, 0, -1, 1, 1, -1 };
+            int[] deltaX = new int[] { 0, -1, 0, 1, -1, -1, 1, 1 };
+            int[] cost = new int[] { 10, 10, 10, 10, 14, 14, 14, 14 };
 
             // 점수 매기기
             // F = G + H
@@ -95,9 +96,9 @@ namespace Algorithm
             // 시작점 발견 (예약 진행)
             // G = 시작점 ~> 시작점의 이동비용은 0
             // H = 시작점 ~> 도착지점까지의 이동 비용 (장애물 무시)
-            open[PosY, PosX] = Math.Abs(_board.DestY - PosY) + Math.Abs(_board.DestX - PosX);
-            pq.Push(new PQNode() { F = Math.Abs(_board.DestY - PosY) + Math.Abs(_board.DestX - PosX), G = 0, Y = PosY, X = PosX });
-            parent[PosY,PosX] = new Pos(PosY, PosX);
+            open[PosY, PosX] = 10 * (Math.Abs(_board.DestY - PosY) + Math.Abs(_board.DestX - PosX));
+            pq.Push(new PQNode() { F = 10 * (Math.Abs(_board.DestY - PosY) + Math.Abs(_board.DestX - PosX)), G = 0, Y = PosY, X = PosX });
+            parent[PosY, PosX] = new Pos(PosY, PosX);
 
             while (true)
             {
@@ -132,7 +133,7 @@ namespace Algorithm
 
                     // 비용게산
                     int g = node.G + cost[i];
-                    int h = Math.Abs(_board.DestY - nextY) + Math.Abs(_board.DestX - nextX);
+                    int h = 10 * (Math.Abs(_board.DestY - nextY) + Math.Abs(_board.DestX - nextX));
 
                     // 다른 경로에서 더 빠른 길 이미 찾았으면 스킵
                     if (open[nextY, nextX] < g + h)
