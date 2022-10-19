@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.ComponentModel.Design;
 using System.Net.Mime;
 using System.Numerics;
@@ -10,36 +11,103 @@ namespace Exercise
 
         static void Main(string[] args)
         {
-            TreeNode<string> root = MakeTree();
+            PriorityQueue q = new PriorityQueue();
+            q.Push(20);
+            q.Push(10);
+            q.Push(30);
+            q.Push(90);
+            q.Push(40);
 
-            //PrintTree(root);
-            Console.WriteLine(GetHeight(root));
-        }
-
-        static void PrintTree(TreeNode<string> root)
-        {
-            Console.WriteLine(root.Data);
-
-            foreach (TreeNode<string> child in root.Children)
-                PrintTree(child);
-        }
-
-        static int GetHeight(TreeNode<string> root)
-        {
-            int height = 0;
-
-            foreach(TreeNode<string> child in root.Children)
+            while(q.Count() >0)
             {
-                int newHeight = GetHeight(child) + 1;
+                Console.WriteLine(q.Pop());
+            }
+        }
 
-                // Math.Max 코드로 표현 가능
-                //if(height < newHeight)
-                    //height = newHeight;
+        class PriorityQueue
+        {
+            List<int> _heap = new List<int>();
 
-                height = Math.Max(height, newHeight);
+            public void Push(int data)
+            {
+                // 힙의 맨 끝에 새로운 데이터를 삽입한다.
+                _heap.Add(data);
+
+                // 힙의 맨 마지막에서 시작한다.
+                int now = _heap.Count - 1;
+
+                // now가 힙의 index내에 있다면 계속 시도함
+                while(now > 0)
+                {
+                    int next = (now - 1) / 2;
+
+                    // 부모노드의 값이 나보다 크면 break
+                    if (_heap[next] > _heap[now])
+                        break;
+
+                    // 내가 부모노드보다 값이 크거나 같으면 교체한다.
+                    int temp = _heap[next];
+                    _heap[next] = _heap[now];
+                    _heap[now] = temp;
+
+                    // 검사 위치를 이동한다.
+                    now = next;
+                }
             }
 
-            return height;
+            public int Pop()
+            {
+                // 가장 큰 값 Root (index : 0) 을 반환한다.
+                int ret = _heap[0];
+
+                int lastIndex = _heap.Count - 1;
+                // 마지막 데이터를 루트로 이동한다
+                _heap[0] = _heap[lastIndex];
+                _heap.RemoveAt(lastIndex);
+                lastIndex--;
+
+                int now = 0;
+
+                while (true)
+                {
+                    int left = (now * 2) + 1;
+                    int right = (now * 2) + 2;
+                    int next = now;
+
+                    if (left <= _heap.Count - 1 && _heap[left] > _heap[next])
+                        next = left;
+                    if (right <= _heap.Count - 1 && _heap[right] > _heap[next])
+                        next = right;
+
+                    // 왼쪽 & 오른쪽 모두 현재값보다 작으면 종료
+                    if (next == now)
+                        break;
+
+                    int temp = _heap[now];
+                    _heap[now] = _heap[next];
+                    _heap[next] = temp;
+
+                    now = next;
+
+                }
+
+
+                return ret;
+            }
+
+            public int Count()
+            {
+                int count = _heap.Count;
+
+                return count;
+            }
+        }
+
+        #region Tree
+        class TreeNode<T>
+        {
+            public T Data { get; set; }
+            public List<TreeNode<T>> Children { get; set; } = new List<TreeNode<T>>();
         }
 
         static TreeNode<string> MakeTree()
@@ -70,6 +138,34 @@ namespace Exercise
 
             return root;
         }
+
+        static void PrintTree(TreeNode<string> root)
+        {
+            Console.WriteLine(root.Data);
+
+            foreach (TreeNode<string> child in root.Children)
+                PrintTree(child);
+        }
+
+        static int GetHeight(TreeNode<string> root)
+        {
+            int height = 0;
+
+            foreach (TreeNode<string> child in root.Children)
+            {
+                int newHeight = GetHeight(child) + 1;
+
+                // Math.Max 코드로 표현 가능
+                //if(height < newHeight)
+                //height = newHeight;
+
+                height = Math.Max(height, newHeight);
+            }
+
+            return height;
+        }
+
+        #endregion
 
         class Graph
         {
@@ -252,12 +348,6 @@ namespace Exercise
 
 
 
-        }
-
-        class TreeNode<T>
-        {
-            public T Data { get; set; }
-            public List<TreeNode<T>> Children { get; set; } = new List<TreeNode<T>>();
         }
     }
 }
