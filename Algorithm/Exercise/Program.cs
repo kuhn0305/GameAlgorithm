@@ -8,13 +8,67 @@ namespace Exercise
     class Program
     {
 
-
         static void Main(string[] args)
         {
-            Graph graph = new Graph();
+            TreeNode<string> root = MakeTree();
 
-            graph.Dijikstra2(0);
+            //PrintTree(root);
+            Console.WriteLine(GetHeight(root));
+        }
 
+        static void PrintTree(TreeNode<string> root)
+        {
+            Console.WriteLine(root.Data);
+
+            foreach (TreeNode<string> child in root.Children)
+                PrintTree(child);
+        }
+
+        static int GetHeight(TreeNode<string> root)
+        {
+            int height = 0;
+
+            foreach(TreeNode<string> child in root.Children)
+            {
+                int newHeight = GetHeight(child) + 1;
+
+                // Math.Max 코드로 표현 가능
+                //if(height < newHeight)
+                    //height = newHeight;
+
+                height = Math.Max(height, newHeight);
+            }
+
+            return height;
+        }
+
+        static TreeNode<string> MakeTree()
+        {
+            TreeNode<string> root = new TreeNode<string> { Data = "R1 개발실" };
+            {
+                {
+                    TreeNode<string> node = new TreeNode<string> { Data = "디자인팀" };
+                    node.Children.Add(new TreeNode<string> { Data = "전투" });
+                    node.Children.Add(new TreeNode<string> { Data = "경제" });
+                    node.Children.Add(new TreeNode<string> { Data = "스토리" });
+                    root.Children.Add(node);
+                }
+                {
+                    TreeNode<string> node = new TreeNode<string> { Data = "프로그래밍" };
+                    node.Children.Add(new TreeNode<string> { Data = "서버" });
+                    node.Children.Add(new TreeNode<string> { Data = "클라" });
+                    node.Children.Add(new TreeNode<string> { Data = "엔진" });
+                    root.Children.Add(node);
+                }
+                {
+                    TreeNode<string> node = new TreeNode<string> { Data = "아트팀" };
+                    node.Children.Add(new TreeNode<string> { Data = "배경" });
+                    node.Children.Add(new TreeNode<string> { Data = "캐릭터" });
+                    root.Children.Add(node);
+                }
+            }
+
+            return root;
         }
 
         class Graph
@@ -196,110 +250,14 @@ namespace Exercise
                 }
             }
 
-            public void Dijikstra1(int start)
-            {
-                bool[] visited = new bool[weightAdj.GetLength(0)];
-                int[] distance = new int[weightAdj.GetLength(0)];
-                int[] parent = new int[weightAdj.GetLength(0)];
-
-                Array.Fill(distance, Int32.MaxValue);
-
-                distance[start] = 0;
-                parent[start] = start;
-
-                while(true)
-                {
-                    int closest = Int32.MaxValue;
-                    int now = -1;
-
-                    for(int i =0; i < weightAdj.GetLength(0); i++)
-                    {
-                        // 발견되지 않았거나... 기존의 최단거리보다 멀면 pass
-                        if (distance[i] == Int32.MaxValue || distance[i] >= closest)
-                            continue;
-
-                        if (visited[i])
-                            continue;
-
-                        closest = distance[i];
-                        now = i;
-                    }
-
-                    if (now == -1)
-                        return;
-
-                    visited[now] = true;
 
 
-                    for(int next = 0; next < weightAdj.GetLength(0); next++)
-                    {
-                        if (weightAdj[now, next] == -1)
-                            continue;
+        }
 
-                        if (visited[next])
-                            continue;
-
-                        int nextDist = distance[now] + weightAdj[now, next];
-
-                        if(nextDist < distance[next])
-                        {
-                            distance[next] = nextDist;
-                            parent[next] = now;
-                        }
-                    }
-                }
-            }
-
-            public void Dijikstra2(int start)
-            {
-                bool[] visited = new bool[weightAdj.GetLength(0)];
-                int[] distance = new int[weightAdj.GetLength(0)];
-                int[] parent = new int[weightAdj.GetLength(0)];
-
-                Array.Fill(distance, Int32.MaxValue);
-
-                distance[start] = 0;
-                parent[start] = start;
-
-                while(true)
-                {
-                    int closest = Int32.MaxValue;
-                    int now = -1;
-
-                    for(int v = 0; v < weightAdj.GetLength(0); v++)
-                    {
-                        if (visited[v])
-                            continue;
-                        if (distance[v] == Int32.MaxValue || distance[v] >= closest)
-                            continue;
-
-                        now = v;
-                        closest = distance[v];
-                    }
-
-                    if (now == -1)
-                        return;
-
-                    visited[now] = true;
-
-                    for (int next = 0; next < weightAdj.GetLength(0); next++)
-                    {
-                        if (visited[next])
-                            continue;
-                        if (weightAdj[now, next] == -1)
-                            continue;
-
-                        int nextDist = distance[now] + weightAdj[now, next];
-
-                        if(nextDist < distance[next] )
-                        {
-                            distance[next] = nextDist;
-                            parent[next] = now;
-                        }
-                    }
-                }
-            }
-
+        class TreeNode<T>
+        {
+            public T Data { get; set; }
+            public List<TreeNode<T>> Children { get; set; } = new List<TreeNode<T>>();
         }
     }
 }
